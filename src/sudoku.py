@@ -27,22 +27,31 @@ class Sudoku:
 
     def decode(self):
         """ Decode the board data from a correctly formatted text file. """
+        try:
+            # Read content from file at specified path
+            for line in self.input_board.splitlines():
+                if len(line) != 0:  # Ignore empty lines which separates 3x3 squares
+                    board_line = []
+                    for char in line:
+                        if char != ' ':  # Ignore whitespaces which separates 3x3 squares
+                            board_line.append(int(char))
+                    self.board.append(board_line)
 
-        # Read content from file at specified path
-        for line in self.input_board.splitlines():
-            if len(line) != 0:  # Ignore empty lines which separates 3x3 squares
-                board_line = []
-                for char in line:
-                    if char != ' ':  # Ignore whitespaces which separates 3x3 squares
-                        board_line.append(int(char))
-                self.board.append(board_line)
+            if len(self.board) != 9 and len(self.board[0]) != 9:
+                raise IndexError
+        except ValueError:
+            print('Found incorrect character(s) in the file; Cancelling operation.')
+            quit(2)
+        except IndexError:
+            print('Given board doesn\'t match correct board shape; Cancelling operation.')
+            quit(2)
 
     def solve(self):
-        next = self.find_next_empty()
-        if not next:
+        next_tile = self.find_next_empty()
+        if not next_tile:
             return True
         else:
-            y, x = next
+            y, x = next_tile
 
         for n in range(1, 10):
             if self.is_valid(n, (y, x)):
@@ -74,7 +83,6 @@ class Sudoku:
                 if self.board[j][i] == guess and (j, i) != position:
                     return False
 
-        print(self.board)
         return True
 
     def find_next_empty(self):

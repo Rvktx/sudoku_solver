@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
+
 from sudoku import Sudoku
 
-if __name__ == '__main__':
+
+def main():
     parser = argparse.ArgumentParser(description='Sudoku solver')
 
     parser.add_argument('--create-input-file', type=bool, required=False, default=False,
@@ -16,6 +19,9 @@ if __name__ == '__main__':
     if args.create_input_file:
         template = Sudoku.create_template()
 
+        if os.path.exists(args.path):
+            raise FileExistsError
+
         with open(args.path, 'w') as f:
             f.write(template)
     else:
@@ -25,3 +31,14 @@ if __name__ == '__main__':
         sudoku = Sudoku(input_board=input_board)
         sudoku.solve()
         print(str(sudoku))
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except FileExistsError:
+        print('There is already a file at the given path.')
+        quit(1)
+    except FileNotFoundError:
+        print('There is no file at the given location.')
+        quit(1)
